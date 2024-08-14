@@ -30,3 +30,26 @@ pub fn attribute_tokens(attrs: &[Attribute]) -> TokenStream {
     }
     tokens
 }
+
+
+pub fn use_async_trait_tokens(send: bool, is_trait: bool) -> TokenStream {
+    #[cfg(feature="use-async-trait")]
+    return if send {
+        let _ = is_trait;
+        quote! { #[::remoc::rtc::async_trait] }
+    } else {
+        quote! { #[::remoc::rtc::async_trait(?Send)] }
+    };
+
+    #[cfg(feature="use-trait-variant")]
+    return if !is_trait {
+        quote! {}
+    } else if send {
+        quote! { #[::remoc::rtc::async_trait(Send)] }
+    } else {
+        quote! { #[::remoc::rtc::async_trait] }
+    };
+
+    #[cfg(not(any(feature="use-async-trait", feature="use-trait-variant")))]
+    return quote! {};
+}

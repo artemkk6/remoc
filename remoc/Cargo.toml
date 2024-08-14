@@ -13,13 +13,17 @@ authors = { workspace = true }
 
 
 [features]
-default = ["full", "default-codec-json"]
+default = ["full", "default-codec-json", "use-async-trait"]
 full = ["serde", "rch", "rfn", "robj", "robs", "rtc"]
-rch = ["async-trait", "serde", "tokio-util/codec", "tokio/io-util"]
+rch = ["serde", "tokio-util/codec", "tokio/io-util"]
 rfn = ["rch"]
 robj = ["rch"]
 robs = ["rch"]
-rtc = ["rch", "remoc_macro", "async-trait"]
+rtc = ["rch", "remoc_macro"]
+
+# Async traits macros
+use-async-trait = ["async-trait", "remoc_macro?/use-async-trait"]
+use-trait-variant = ["trait-variant", "remoc_macro?/use-trait-variant"]
 
 # Codecs
 default-codec-set = []
@@ -43,7 +47,7 @@ full-codecs = [
 
 
 [dependencies]
-remoc_macro = { version = "=0.14.0", path = "../remoc_macro", optional = true }
+remoc_macro = { version = "=0.14.0", path = "../remoc_macro", optional = true, default-features = false}
 
 futures = "0.3"
 tokio = { version = "1.34", features = ["macros", "rt", "sync", "time"] }
@@ -54,6 +58,7 @@ bytes = "1"
 byteorder = "1.4"
 uuid = { version = "1", features = ["serde", "v4"] }
 async-trait = { version = "0.1", optional = true }
+trait-variant = { version = "0.1", optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 
 # Codecs

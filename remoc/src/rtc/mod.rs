@@ -238,8 +238,12 @@ use crate::{
 /// Attribute that must be applied on all implementations of a trait
 /// marked with the [remote] attribute.
 ///
-/// This is a re-export from the [mod@async_trait] crate.
+/// This is a re-export from the [mod@async_trait] or [mod@trait_variant] crate.
+#[cfg(feature="use-async-trait")]
 pub use async_trait::async_trait;
+
+#[cfg(feature="use-trait-variant")]
+pub use trait_variant::make as async_trait;
 
 /// Denotes a trait as remotely callable and generate a client and servers for it.
 ///
@@ -434,7 +438,8 @@ pub trait ServerBase {
 }
 
 /// A server of a remotable trait taking the target object by value.
-#[async_trait]
+#[cfg_attr(feature="use-async-trait", async_trait::async_trait)]
+#[cfg_attr(feature="use-trait-variant", trait_variant::make(Send))]
 pub trait Server<Target, Codec>: ServerBase
 where
     Self: Sized,
@@ -452,7 +457,8 @@ where
 }
 
 /// A server of a remotable trait taking the target object by reference.
-#[async_trait(?Send)]
+#[cfg_attr(feature="use-async-trait", async_trait::async_trait(?Send))]
+#[cfg_attr(feature="use-trait-variant", trait_variant::make)]
 pub trait ServerRef<'target, Target, Codec>: ServerBase
 where
     Self: Sized,
@@ -467,7 +473,8 @@ where
 }
 
 /// A server of a remotable trait taking the target object by mutable reference.
-#[async_trait(?Send)]
+#[cfg_attr(feature="use-async-trait", async_trait::async_trait(?Send))]
+#[cfg_attr(feature="use-trait-variant", trait_variant::make)]
 pub trait ServerRefMut<'target, Target, Codec>: ServerBase
 where
     Self: Sized,
@@ -482,7 +489,8 @@ where
 }
 
 /// A server of a remotable trait taking the target object by shared reference.
-#[async_trait]
+#[cfg_attr(feature="use-async-trait", async_trait::async_trait)]
+#[cfg_attr(feature="use-trait-variant", trait_variant::make(Send))]
 pub trait ServerShared<Target, Codec>: ServerBase
 where
     Self: Sized,
@@ -501,7 +509,8 @@ where
 }
 
 /// A server of a remotable trait taking the target object by shared mutable reference.
-#[async_trait]
+#[cfg_attr(feature="use-async-trait", async_trait::async_trait)]
+#[cfg_attr(feature="use-trait-variant", trait_variant::make(Send))]
 pub trait ServerSharedMut<Target, Codec>: ServerBase
 where
     Self: Sized,
@@ -521,7 +530,8 @@ where
 }
 
 /// A receiver of requests made by the client of a remotable trait.
-#[async_trait]
+#[cfg_attr(feature="use-async-trait", async_trait::async_trait)]
+#[cfg_attr(feature="use-trait-variant", trait_variant::make(Send))]
 pub trait ReqReceiver<Codec>: ServerBase
 where
     Self: Sized,

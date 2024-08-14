@@ -13,7 +13,7 @@ use syn::{
 
 use crate::{
     method::{SelfRef, TraitMethod},
-    util::attribute_tokens,
+    util::{attribute_tokens, use_async_trait_tokens},
 };
 
 /// Trait definition.
@@ -129,9 +129,11 @@ impl TraitDef {
             defs.append_all(m.trait_method());
         }
 
+        let async_trait = use_async_trait_tokens(true, true);
+
         quote! {
             #attrs
-            #[::remoc::rtc::async_trait]
+            #async_trait
             #vis trait #ident #generics #colon #supertraits #where_clause {
                 #defs
             }
@@ -400,6 +402,8 @@ impl TraitDef {
 
         let doc = format!("Server for [{}] taking the target object by value.", &ident);
 
+        let async_trait = use_async_trait_tokens(true, false);
+
         quote! {
             #[doc=#doc]
             #vis struct #server #ty_generics #ty_generics_where {
@@ -419,7 +423,7 @@ impl TraitDef {
                 type Client = #client #req_generics;
             }
 
-            #[::remoc::rtc::async_trait]
+            #async_trait
             impl #impl_generics_impl ::remoc::rtc::Server <Target, Codec> for #server #impl_generics_ty #impl_generics_where
             {
                 fn new(target: Target, request_buffer: usize) -> (Self, Self::Client) {
@@ -467,6 +471,8 @@ impl TraitDef {
 
         let doc = format!("Server for [{}] taking the target object by reference.", &ident);
 
+        let async_trait = use_async_trait_tokens(false, false);
+
         quote! {
             #[doc=#doc]
             #vis struct #server #ty_generics #ty_generics_where {
@@ -486,7 +492,7 @@ impl TraitDef {
                 type Client = #client #req_generics;
             }
 
-            #[::remoc::rtc::async_trait(?Send)]
+            #async_trait
             impl #impl_generics_impl ::remoc::rtc::ServerRef <'target, Target, Codec> for #server #impl_generics_ty #impl_generics_where
             {
                 fn new(target: &'target Target, request_buffer: usize) -> (Self, Self::Client) {
@@ -528,6 +534,8 @@ impl TraitDef {
 
         let doc = format!("Server for [{}] taking the target object by mutable reference.", &ident);
 
+        let async_trait = use_async_trait_tokens(false, false);
+
         quote! {
             #[doc=#doc]
             #vis struct #server #ty_generics #ty_generics_where {
@@ -547,7 +555,7 @@ impl TraitDef {
                 type Client = #client #req_generics;
             }
 
-            #[::remoc::rtc::async_trait(?Send)]
+            #async_trait
             impl #impl_generics_impl ::remoc::rtc::ServerRefMut <'target, Target, Codec> for #server #impl_generics_ty #impl_generics_where
             {
                 fn new(target: &'target mut Target, request_buffer: usize) -> (Self, Self::Client) {
@@ -592,6 +600,8 @@ impl TraitDef {
 
         let doc = format!("Server for [{}] taking the target object by shared reference.", &ident);
 
+        let async_trait = use_async_trait_tokens(true, false);
+
         quote! {
             #[doc=#doc]
             #vis struct #server #ty_generics #ty_generics_where {
@@ -611,7 +621,7 @@ impl TraitDef {
                 type Client = #client #req_generics;
             }
 
-            #[::remoc::rtc::async_trait]
+            #async_trait
             impl #impl_generics_impl ::remoc::rtc::ServerShared <Target, Codec> for #server #impl_generics_ty #impl_generics_where
             {
                 fn new(target: ::std::sync::Arc<Target>, request_buffer: usize) -> (Self, Self::Client) {
@@ -660,6 +670,8 @@ impl TraitDef {
 
         let doc = format!("Server for [{}] taking the target object by shared mutable reference.", &ident);
 
+        let async_trait = use_async_trait_tokens(true, false);
+
         quote! {
             #[doc=#doc]
             #vis struct #server #ty_generics #ty_generics_where {
@@ -679,7 +691,7 @@ impl TraitDef {
                 type Client = #client #req_generics;
             }
 
-            #[::remoc::rtc::async_trait]
+            #async_trait
             impl #impl_generics_impl ::remoc::rtc::ServerSharedMut <Target, Codec> for #server #impl_generics_ty #impl_generics_where
             {
                 fn new(target: ::std::sync::Arc<::remoc::rtc::LocalRwLock<Target>>, request_buffer: usize) -> (Self, Self::Client) {
@@ -733,6 +745,8 @@ impl TraitDef {
 
         let doc = format!("Request receiver for [{}].", &ident);
 
+        let async_trait = use_async_trait_tokens(true, false);
+
         quote! {
             #[doc=#doc]
             #vis struct #server #ty_generics #ty_generics_where {
@@ -751,7 +765,7 @@ impl TraitDef {
                 type Client = #client #req_generics;
             }
 
-            #[::remoc::rtc::async_trait]
+            #async_trait
             impl #impl_generics_impl ::remoc::rtc::ReqReceiver <Codec> for #server #impl_generics_ty #impl_generics_where
             {
                 type Req = #req_all #req_generics;
@@ -827,6 +841,8 @@ impl TraitDef {
 
         let doc = format!("Remote client for [{}].\n\nCan be sent to a remote endpoint.", &ident);
 
+        let async_trait = use_async_trait_tokens(true, false);
+
         quote! {
             #[doc=#doc]
             #[derive(::remoc::rtc::Serialize, ::remoc::rtc::Deserialize)]
@@ -898,7 +914,7 @@ impl TraitDef {
                 }
             }
 
-            #[::remoc::rtc::async_trait]
+            #async_trait
             impl #impl_generics_impl #ident #generics for #client_ident #impl_generics_ty #impl_generics_where {
                 #methods
             }
