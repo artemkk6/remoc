@@ -137,8 +137,8 @@ where
 /// This trait is implemented for the return value of any [Connect] method
 /// using the default codec and a transport with `'static` lifetime.
 #[cfg_attr(docsrs, doc(cfg(feature = "rch")))]
-#[cfg_attr(feature="use-async-trait", async_trait::async_trait)]
-#[cfg_attr(feature="use-trait-variant", trait_variant::make(Send))]
+#[cfg_attr(feature="macro-async-trait", async_trait::async_trait)]
+#[cfg_attr(feature="macro-trait-variant", trait_variant::make(Send))]
 pub trait ConnectExt<T, TransportSinkError, TransportStreamError> {
     /// Establishes the connection and provides a single value to the remote endpoint.
     ///
@@ -161,8 +161,8 @@ pub trait ConnectExt<T, TransportSinkError, TransportStreamError> {
     async fn consume(self) -> Result<T, ConsumeError<TransportSinkError, TransportStreamError>>;
 }
 
-#[cfg_attr(feature="use-async-trait", async_trait::async_trait)]
 #[cfg(feature = "default-codec-set")]
+#[cfg_attr(feature="macro-async-trait", async_trait::async_trait)]
 impl<TransportSinkError, TransportStreamError, T, ConnectFuture>
     ConnectExt<T, TransportSinkError, TransportStreamError> for ConnectFuture
 where

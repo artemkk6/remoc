@@ -11,9 +11,9 @@ authors = { workspace = true }
 
 
 [features]
-default=["use-async-trait"]
-use-async-trait = []
-use-trait-variant = []
+default=["macro-async-trait"]
+macro-async-trait = []
+macro-trait-variant = []
 
 
 [dependencies]

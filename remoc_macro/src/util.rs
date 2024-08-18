@@ -31,25 +31,34 @@ pub fn attribute_tokens(attrs: &[Attribute]) -> TokenStream {
     tokens
 }
 
-
-pub fn use_async_trait_tokens(send: bool, is_trait: bool) -> TokenStream {
-    #[cfg(feature="use-async-trait")]
+pub fn trait_macro_attribute_tokens(send: bool) -> TokenStream {
+    #[cfg(feature="macro-async-trait")]
     return if send {
-        let _ = is_trait;
         quote! { #[::remoc::rtc::async_trait] }
     } else {
         quote! { #[::remoc::rtc::async_trait(?Send)] }
     };
 
-    #[cfg(feature="use-trait-variant")]
-    return if !is_trait {
-        quote! {}
-    } else if send {
+    #[cfg(feature="macro-trait-variant")]
+    return if send {
         quote! { #[::remoc::rtc::async_trait(Send)] }
     } else {
         quote! { #[::remoc::rtc::async_trait] }
     };
 
-    #[cfg(not(any(feature="use-async-trait", feature="use-trait-variant")))]
+    #[cfg(not(any(feature="macro-async-trait", feature="macro-trait-variant")))]
+    return quote! {};
+}
+
+pub fn impl_macro_attribute_tokens(send: bool) -> TokenStream {
+    #[cfg(feature="macro-async-trait")]
+    return if send {
+        quote! { #[::remoc::rtc::async_trait] }
+    } else {
+        quote! { #[::remoc::rtc::async_trait(?Send)] }
+    };
+
+
+    #[cfg(not(feature="macro-async-trait"))]
     return quote! {};
 }
